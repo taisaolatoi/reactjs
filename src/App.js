@@ -1,20 +1,13 @@
-import Header from "./containers/Header";
-import Footer from "./containers/Footer";
-import { Outlet } from "react-router-dom";
+import React from "react";
+import { BrowserRouter } from "react-router-dom";
+import router from "./routes/clientRoutes";
+import { AuthProvider } from "./contexts/AuthContext";
 
 function App() {
     return (
-        <div className="App">
-            <div className="Header">
-                <Header />
-            </div>
-            <div className="Outlet">
-                <Outlet />
-            </div>
-            <div className="Footer">
-                <Footer />
-            </div>
-        </div>
+        <AuthProvider>
+            <BrowserRouter>{router}</BrowserRouter>;
+        </AuthProvider>
     );
 }
 

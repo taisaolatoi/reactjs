@@ -1,8 +1,11 @@
-import React, { useState } from "react";
-import axios from "axios"; // Import axios
+import React, { useState, useContext } from "react";
+import axios from "axios";
+import { AuthContext } from "../../contexts/AuthContext"; // Import AuthContext
+import { jwtDecode } from "jwt-decode"; // Import jwtDecode
 import "./Auth.scss";
 
 const LoginForm = ({ onClose, onToggle }) => {
+    const { setIsAuthenticated, setUser, setRole } = useContext(AuthContext); // Lấy các hàm cập nhật trạng thái
     const [formData, setFormData] = useState({
         username: "",
         password: "",
@@ -17,10 +20,33 @@ const LoginForm = ({ onClose, onToggle }) => {
     };
 
     const handleSubmit = async (e) => {
-        e.preventDefault(); // Ngừng hành động mặc định của form (không reload trang)
+        e.preventDefault();
 
-        // Gửi yêu cầu POST đến API đăng nhập sử dụng axios
-        await axios.post("http://localhost:8080/api/loginPost", formData);
+        try {
+            const response = await axios.post(
+                "http://localhost:8080/api/loginPost",
+                formData
+            );
+
+            if (response.data.errCode === 0) {
+                const token = response.data.token;
+                // Lưu token vào localStorage
+                localStorage.setItem("token", token);
+
+                // Giải mã token và cập nhật trạng thái người dùng
+                const decoded = jwtDecode(token);
+                setUser(decoded.username); // Cập nhật tên người dùng
+                setRole(decoded.role); // Cập nhật role người dùng
+                setIsAuthenticated(true); // Đánh dấu là đã đăng nhập thành công
+
+                // Đóng modal sau khi đăng nhập thành công
+                onClose();
+            } else {
+                alert(response.data.errMessage);
+            }
+        } catch (error) {
+            console.error("Đăng nhập thất bại:", error);
+        }
     };
 
     return (
