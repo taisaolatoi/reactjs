@@ -1,0 +1,62 @@
+.cotainer_account {
+    background-color: #d9d9d9;
+    min-height: 500px;
+    height: max-content;
+    padding: 20px 0;
+}
+
+.account_page_inner {
+    display: flex;
+    gap: 4.5rem;
+    width: 90%;
+    margin: 0 auto;
+    padding-top: 10px;
+
+
+    .account_page_sidebar {
+        max-width: 100%;
+        width: 385px;
+
+        .account_sidebar {
+            border-right: 1px solid #d9d9d9;
+        }
+
+        .account_sidebar_item {
+            align-items: center;
+            background-color: #fff;
+            border-radius: .5rem;
+            box-sizing: border-box;
+            display: flex;
+            font-size: 1rem;
+            height: 55px;
+            padding: .75rem 3rem .75rem .75rem;
+            position: relative;
+            transition: all .2s;
+            width: 100%;
+            margin-bottom: 1rem;
+            color: black;
+            text-decoration: none;
+        }
+
+        .account_sidebar_item:hover {
+            background-color: #000;
+            color: #fff;
+        }
+
+        .circle {
+            display: block;
+            height: 29px;
+            margin-right: .5rem;
+            transition: all .3s;
+            width: 29px;
+        }
+    }
+
+    .account_page_content {
+        background-color: #fff;
+        border-radius: .5rem;
+        flex: 1;
+        overflow: hidden;
+        padding: 1.625rem 3.875rem;
+    }
+}
