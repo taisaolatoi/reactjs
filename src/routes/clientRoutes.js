@@ -1,14 +1,14 @@
-import { createBrowserRouter } from 'react-router-dom';
-import Content from '../component/content';
-import LayOut from '../containers/homepage/Layout';
-import ProductList from '../containers/productpage/productpage';
-import ProductDetail from '../containers/productdetail/productdetail';
-import LayOutAccount from '../containers/accountpage/Layoutaccount';
-import AccountPageIn4 from '../component/account-in4';
-import AccountPageOrder from '../component/account-order';
-import Cart from '../containers/cart/cart';
-import Province from '../containers/province/province.jsx';
-import Search from '../containers/searchpage/search.jsx';
+import { createBrowserRouter } from "react-router-dom";
+import Content from "../component/content";
+import LayOut from "../containers/homepage/Layout";
+import ProductList from "../containers/productpage/productpage";
+import ProductDetail from "../containers/productdetail/productdetail";
+import LayOutAccount from "../containers/accountpage/Layoutaccount";
+import AccountPageIn4 from "../component/account-in4";
+import AccountPageOrder from "../component/account-order";
+import Cart from "../containers/cart/cart";
+import Province from "../containers/province/province.jsx";
+import Search from "../containers/searchpage/search.jsx";
 
 export const router = createBrowserRouter([
     {
@@ -17,27 +17,36 @@ export const router = createBrowserRouter([
         children: [
             {
                 path: "/",
-                element: <Content />
+                element: <Content />,
             },
             {
+<<<<<<< HEAD
                 path: "/product/:id",
                 element: <ProductList />
             },
             {
                 path: "/product-detail/:id",
                 element: <ProductDetail />
+=======
+                path: "/product",
+                element: <ProductList />,
+            },
+            {
+                path: "/product_detail",
+                element: <ProductDetail />,
+>>>>>>> f968758ccdcd2dd13bc6096c409e120da4a8d0df
             },
             {
                 path: "/cart",
-                element: <Cart />
+                element: <Cart />,
             },
             {
                 path: "/province",
-                element: <Province />
+                element: <Province />,
             },
             {
                 path: "/search",
-                element: <Search />
+                element: <Search />,
             },
             {
                 path: "/account",
@@ -45,18 +54,18 @@ export const router = createBrowserRouter([
                 children: [
                     {
                         path: "/account",
-                        element: <AccountPageIn4 />
+                        element: <AccountPageIn4 />,
                     },
                     {
                         path: "/account/order",
-                        element: <AccountPageOrder />
-                    }
-                ]
-            }
-        ]
+                        element: <AccountPageOrder />,
+                    },
+                ],
+            },
+        ],
     },
     {
         path: "*",
-        element: <div>Không tìm thấy web theo yêu cầu</div>
-    }
+        element: <div>Không tìm thấy web theo yêu cầu</div>,
+    },
 ]);
