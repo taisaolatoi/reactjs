@@ -1,17 +1,4 @@
-<<<<<<< HEAD
-import React, { useState, useEffect } from "react";
-import logo from '../img/logo-coolmate-new.svg'
-import search_icon from '../img/search.svg'
-import user_icon from '../img/user.svg'
-import cart_icon from '../img/cart.svg'
-import Sub_menu from "./sub_menu";
-import LoginForm from "../containers/auth/Login";
-import RegisForm from "../containers/auth/Register";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import productServices from "../services/productServices";
-import './Header.scss'
-=======
-import React, { useContext, useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import logo from "../img/logo-coolmate-new.svg";
 import search_icon from "../img/search.svg";
 import user_icon from "../img/user.svg";
@@ -19,10 +6,11 @@ import cart_icon from "../img/cart.svg";
 import Sub_menu from "./sub_menu";
 import LoginForm from "../containers/auth/Login";
 import RegisForm from "../containers/auth/Register";
-import { AuthContext } from "../contexts/AuthContext";
-import { NavLink } from "react-router-dom"; // Import NavLink from react-router-dom
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import productServices from "../services/productServices";
 import "./Header.scss";
->>>>>>> f968758ccdcd2dd13bc6096c409e120da4a8d0df
+import { NavLink } from "react-router-dom";
+import { AuthContext } from "../contexts/AuthContext";
 
 const Header = () => {
     const { isAuthenticated, user, role, logout } = useContext(AuthContext);
@@ -48,12 +36,12 @@ const Header = () => {
     useEffect(() => {
         const fetchTypeProduct = async () => {
             try {
-                let type = await productServices.getTypeProduct()
-                setType(type)
+                let type = await productServices.getTypeProduct();
+                setType(type);
             } catch (error) {
-                console.error("Lỗi lấy loại sản phẩm:", error)
+                console.error("Lỗi lấy loại sản phẩm:", error);
             }
-        }
+        };
         fetchTypeProduct();
     }, []);
 
@@ -67,13 +55,8 @@ const Header = () => {
             <div className="nav_header">
                 <ul className="nav_sub">
                     <li className="nav_sub_item">
-<<<<<<< HEAD
                         <a href="">SẢN PHẨM</a>
                         <Sub_menu type={type} />
-=======
-                        <a href="#">SẢN PHẨM</a>
-                        <Sub_menu />
->>>>>>> f968758ccdcd2dd13bc6096c409e120da4a8d0df
                     </li>
                     <li className="nav_sub_item">
                         <a href="#">ĐỒ LÓT</a>

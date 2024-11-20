@@ -14,7 +14,6 @@ const AccountPageIn4 = () => {
         if (token) {
             axios
                 .get("http://localhost:8080/api/fetchGetUserInfo", {
-                    // Thay thế bằng API của bạn
                     headers: {
                         Authorization: `Bearer ${token}`, // Thêm token vào header
                     },
@@ -32,8 +31,11 @@ const AccountPageIn4 = () => {
         setShowUpdateForm(true);
     };
 
-    const handleCloseUpdateForm = () => {
+    const handleCloseUpdateForm = (updatedUserData) => {
         setShowUpdateForm(false);
+        if (updatedUserData) {
+            setUserData(updatedUserData); // Cập nhật lại dữ liệu người dùng sau khi thành công
+        }
     };
 
     const [showUpdateFormPass, setShowUpdateFormPass] = useState(false);
@@ -50,7 +52,6 @@ const AccountPageIn4 = () => {
         <>
             <h3 className="account_page_title">Thông tin tài khoản</h3>
             <div className="account_in4_form">
-                {/* Hiển thị thông tin từ userData */}
                 {userData && (
                     <>
                         <div className="account_in4_field">
@@ -74,6 +75,12 @@ const AccountPageIn4 = () => {
                             </div>
                         </div>
                         <div className="account_in4_field">
+                            <div className="account_in4_label">Giới tính</div>
+                            <div className="account_in4_value">
+                                {userData.user.gender}
+                            </div>
+                        </div>
+                        <div className="account_in4_field">
                             <button
                                 className="account_in4_btn"
                                 onClick={handleShowUpdateForm}
@@ -83,9 +90,13 @@ const AccountPageIn4 = () => {
                         </div>
                     </>
                 )}
-                {showUpdateForm && (
+                {showUpdateForm && userData && (
                     <div className="login-modal">
-                        <UpdateForm onClose={handleCloseUpdateForm} />
+                        <UpdateForm
+                            onClose={handleCloseUpdateForm} // Truyền callback vào để cập nhật dữ liệu
+                            userData={userData}
+                            setUserData={setUserData} // Truyền hàm setUserData để cập nhật state
+                        />
                     </div>
                 )}
             </div>

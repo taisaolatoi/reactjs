@@ -1,11 +1,14 @@
 import React, { useState, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "../../contexts/AuthContext"; // Import AuthContext
-import { jwtDecode } from "jwt-decode"; // Import jwtDecode
+import { AuthContext } from "../../contexts/AuthContext";
+import { jwtDecode } from "jwt-decode";
 import "./Auth.scss";
+import { toast } from "react-toastify";
 
 const LoginForm = ({ onClose, onToggle }) => {
-    const { setIsAuthenticated, setUser, setRole } = useContext(AuthContext); // Lấy các hàm cập nhật trạng thái
+    const { setIsAuthenticated, setUser, setRole, setUserId } =
+        useContext(AuthContext);
+
     const [formData, setFormData] = useState({
         username: "",
         password: "",
@@ -30,22 +33,21 @@ const LoginForm = ({ onClose, onToggle }) => {
 
             if (response.data.errCode === 0) {
                 const token = response.data.token;
-                // Lưu token vào localStorage
                 localStorage.setItem("token", token);
 
-                // Giải mã token và cập nhật trạng thái người dùng
                 const decoded = jwtDecode(token);
-                setUser(decoded.username); // Cập nhật tên người dùng
-                setRole(decoded.role); // Cập nhật role người dùng
-                setIsAuthenticated(true); // Đánh dấu là đã đăng nhập thành công
-
-                // Đóng modal sau khi đăng nhập thành công
+                setUser(decoded.username);
+                setRole(decoded.role);
+                setUserId(decoded.userId); // Extract and update userId
+                setIsAuthenticated(true);
                 onClose();
+                toast.success(response.data.errMessage);
             } else {
-                alert(response.data.errMessage);
+                toast.error(response.data.errMessage);
             }
         } catch (error) {
             console.error("Đăng nhập thất bại:", error);
+            toast.error(error.message);
         }
     };
 
