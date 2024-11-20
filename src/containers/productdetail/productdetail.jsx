@@ -1,10 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useParams } from "react-router-dom";
 import productServices from "../../services/productServices";
 import './productdetail.scss'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import cartServices from "../../services/cartServices";
+import { AuthContext } from "../../contexts/AuthContext";
+
 
 const ProductDetail = () => {
     const { id } = useParams();
@@ -13,12 +15,20 @@ const ProductDetail = () => {
     const [size, setSize] = useState([])
     const [Product1, setProduct1] = useState([])
     const [selectedSize, setSelectedSize] = useState('');
+    const { isAuthenticated, user, role, logout } = useContext(AuthContext);
 
 
     const handleCheck = (event) => {
         const input = event.target.previousElementSibling;
+
+        // Kiểm tra xem input có bị vô hiệu hóa hay không
+        if (input.disabled) {
+            return; // Ngừng thực hiện nếu input bị vô hiệu hóa
+        }
+
         input.click();
         setSelectedSize(input.value);
+
         const otherRadios = document.querySelectorAll('input[name="size"]:not(:checked)');
         otherRadios.forEach(radio => {
             radio.checked = false;
@@ -32,11 +42,16 @@ const ProductDetail = () => {
 
 
     const handleIncreaseQuantity = () => {
+        if (!selectedSize) {
+            toast.error('Vui lòng chọn kích thước trước!');
+            return; // Dừng thực thi hàm nếu chưa chọn size
+        }
+
         const selectedProduct = size.find(product => product.size === selectedSize);
         if (selectedProduct && quantity < selectedProduct.stock) {
             setQuantity(prevQuantity => Number(prevQuantity) + 1);
         } else {
-            toast.error(`Số lượng trong kho chỉ còn ${selectedProduct.stock}!`); // Sử dụng toast.error()
+            toast.error(`Số lượng trong kho chỉ còn ${selectedProduct.stock}!`);
         }
     };
 
@@ -143,7 +158,7 @@ const ProductDetail = () => {
 
                         <div className="option_select">
                             {size.map(product => (
-                                <label key={product.size} htmlFor="" className="option_select_item">
+                                <label key={product.size} className="option_select_item">
                                     <div className="option_select_inner">
                                         <input
                                             type="radio"
@@ -151,8 +166,17 @@ const ProductDetail = () => {
                                             value={product.size}
                                             checked={selectedSize === product.size}
                                             onChange={(e) => setSelectedSize(e.target.value)}
+                                            disabled={product.stock == 0}
                                         />
-                                        <span className="checkmark" onClick={handleCheck}>{product.size}</span>
+                                        <span
+                                            className="checkmark"
+                                            onClick={product.stock == 0 ? null : handleCheck}
+                                            style={{
+                                                pointerEvents: product.stock == 0 ? 'none' : 'auto',
+                                            }}
+                                        >
+                                            {product.size}
+                                        </span>
                                     </div>
                                 </label>
                             ))}
@@ -174,9 +198,16 @@ const ProductDetail = () => {
                                 <input type="hidden" name="quantity" value={quantity} />
                                 <input type="hidden" name="size" value={selectedSize} />
                                 <input type="hidden" name="id_product" value={id} />
-                                <div className="product-single_button">
-                                    <button className="btn" href="">Thêm vào giỏ hàng</button>
-                                </div>
+
+                                {isAuthenticated ? (
+                                    <div className="product-single_button">
+                                        <button className="btn" href="">Thêm vào giỏ hàng</button>
+                                    </div>
+                                ) : (
+                                    <div className="login_prompt">
+                                        <p>Vui lòng đăng nhập để thanh toán giỏ hàng</p>
+                                    </div>
+                                )}
                             </form>
                         </div>
                     </div>
