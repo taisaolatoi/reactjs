@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import logo from '../img/logo-coolmate-new.svg'
 import search_icon from '../img/search.svg'
 import user_icon from '../img/user.svg'
@@ -7,11 +7,13 @@ import Sub_menu from "./sub_menu";
 import LoginForm from "../containers/auth/Login";
 import RegisForm from "../containers/auth/Register";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import productServices from "../services/productServices";
 import './Header.scss'
 
 const Header = () => {
     const [showAuthForm, setShowAuthForm] = useState(false);
     const [isLogin, setIsLogin] = useState(true);
+    const [type, setType] = useState([]);
 
     const handleShowAuthForm = () => {
         setShowAuthForm(true);
@@ -25,6 +27,18 @@ const Header = () => {
         setIsLogin(!isLogin);
     };
 
+    useEffect(() => {
+        const fetchTypeProduct = async () => {
+            try {
+                let type = await productServices.getTypeProduct()
+                setType(type)
+            } catch (error) {
+                console.error("Lỗi lấy loại sản phẩm:", error)
+            }
+        }
+        fetchTypeProduct();
+    }, []);
+
     return (
         <div className="header">
             <div className="logo_header">
@@ -34,7 +48,7 @@ const Header = () => {
                 <ul className="nav_sub">
                     <li className="nav_sub_item">
                         <a href="">SẢN PHẨM</a>
-                        <Sub_menu />
+                        <Sub_menu type={type} />
                     </li>
                     <li className="nav_sub_item">
                         <a href="">ĐỒ LÓT</a>
