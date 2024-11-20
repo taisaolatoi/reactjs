@@ -7,15 +7,49 @@ import {
 } from "../province/province";
 import "./cart.scss";
 import { AuthContext } from "../../contexts/AuthContext";
+import cartServices from "../../services/cartServices";
+// import orderServices from "../../services/"
+import axios from "axios";
+import orderServices from "../../services/orderServices";
 
 const Cart = () => {
     const [province, setProvince] = useState("");
     const [district, setDistrict] = useState("");
     const [ward, setWard] = useState("");
+    const [address, setAddress] = useState("");
     const [selectedPayment, setSelectedPayment] = useState(null);
     const [result, setResult] = useState("");
     const [quantity, setQuantity] = useState(1);
     const { isAuthenticated, user, role, logout } = useContext(AuthContext);
+    const [products, setProduct] = useState([])
+    const [userData, setUserData] = useState([]); // Lưu trữ dữ liệu người dùng
+    const [totalPrice, setTotalPrice] = useState(0); // State để lưu trữ tổng tiền
+
+    let total = 0;
+    const productsData = products.map((product, index) => {
+        const formattedPrice = parseFloat(product.price);
+        // const totalPrice = total += formattedPrice * product.quanity;
+
+        return {
+            product_id: product.id_product,
+            product_name: product.name,
+            product_gia: product.price,
+            product_img: product.imageUrl,
+            product_size: product.size,
+            product_quantity: product.quantity,
+            product_Price: totalPrice,
+        };
+    });
+
+
+    useEffect(() => {
+        let total = 0;
+        products.forEach((product) => {
+            total += product.price * product.quantity; // Tính tổng tiền cho mỗi sản phẩm
+        });
+        setTotalPrice(total);
+    }, [products]);
+
 
     useEffect(() => {
         callAPI("https://provinces.open-api.vn/api/?depth=1");
@@ -50,32 +84,111 @@ const Cart = () => {
         }
     };
 
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const response = await axios.get('http://localhost:8080/api/fetchGetUserInfo', {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    });
+                    setUserData(response.data);
+                } catch (error) {
+                    console.error('Lỗi khi lấy thông tin người dùng:', error);
+                }
+            }
+        };
+
+        fetchUserData();
+    }, []);
+
+
+
+    const fetchProduct = async () => {
+        try {
+            const data = await cartServices.getCart();
+            setProduct(data);
+        } catch (error) {
+            console.error('Lỗi lấy giỏ hàng:', error);
+        }
+    };
+
+
+    useEffect(() => {
+        fetchProduct();
+    }, []);
+
+    const handleSubmitDel = async (event) => {
+        event.preventDefault();
+        const id_product = event.target.product_id.value;
+        const size = event.target.size.value;
+
+        try {
+            await cartServices.deleteCart({ id_product, size });
+            fetchProduct();
+        } catch (error) {
+            console.log('Lỗi xóa', error);
+        }
+    };
+
+
+    const handleSubmit = async (event) => {
+        event.preventDefault(); // Ngăn chặn form submit theo mặc định
+        if (!address || !province || !district || !ward || !selectedPayment) {
+            alert("Vui lòng điền đầy đủ thông tin!");
+            return;
+        }
+
+        const address1 = `${address} ${ward} ${district} ${province}`;
+        const status = 'Chờ xác nhận';
+        const paymentStatus = 'Đã hoàn thành';
+        const id_user = userData.user && userData.user.id;
+        const phone = userData && userData.user.phone;
+        const paymentMethod = selectedPayment;
+        const totalPayment = totalPrice;
+
+        try {
+            let response = await orderServices.addOrder({
+                address1,
+                phone,
+                status,
+                products,
+                id_user,
+                paymentMethod,
+                paymentStatus,
+                totalPayment,
+            });
+            console.log("Đơn hàng đã được thêm thành công:", response);
+            fetchProduct();
+        } catch (error) {
+            console.log("Lỗi khi thêm đơn hàng:", error);
+            alert("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+        }
+    };
     return (
         <>
             <div className="cart_page_container">
-                <div className="checkout_container">
-                    <div className="cart_section">
-                        <div className="title_width_actions">
-                            <div className="title">Thông tin đặt hàng</div>
-                        </div>
-                        <form action="" className="cus_in4">
+                <form action="" className="cus_in4">
+                    <div className="checkout_container">
+                        <div className="cart_section">
+                            <div className="title_width_actions">
+                                <div className="title">Thông tin đặt hàng</div>
+                            </div>
                             <div className="form_group_in4">
                                 <div className="form_group a">
                                     <label htmlFor="">Họ và tên</label>
-                                    <input type="text" />
+                                    <input type="text" value={userData.user && userData.user.fullname} readOnly />
                                 </div>
                                 <div className="form_group b">
                                     <label htmlFor="">Số điện thoại</label>
-                                    <input type="text" maxLength={10} />
+                                    <input type="text" maxLength={10} value={userData.user && userData.user.phone} readOnly />
                                 </div>
                             </div>
                             <div className="form_group">
-                                <label htmlFor="">Email</label>
-                                <input type="email" />
-                            </div>
-                            <div className="form_group">
                                 <label htmlFor="">Địa chỉ</label>
-                                <input type="text" />
+                                <input type="text" value={userData.user && userData.user.address} onChange={(e) => setAddress(e.target.value)} required />
                             </div>
 
                             <div className="form_group select">
@@ -108,111 +221,111 @@ const Cart = () => {
                                 </select>
                                 {/* <div id="result">{result}</div> */}
                             </div>
-                        </form>
 
-                        <div className="option_payment">
-                            <div className="title">Hình thức thanh toán</div>
-                            <div
-                                className={`payment_COD ${
-                                    selectedPayment === "COD" ? "selected" : ""
-                                }`}
-                                onClick={() => handlePaymentClick("COD")}
-                            >
-                                <span className="payment_method">
-                                    <input
-                                        type="radio"
-                                        name="payment_method"
-                                        checked={selectedPayment === "COD"}
-                                        onChange={() =>
-                                            handlePaymentClick("COD")
-                                        }
-                                    />
-                                    <span className="checkmark"></span>
-                                </span>
+                            <div className="option_payment">
+                                <div className="title">Hình thức thanh toán</div>
+                                <div
+                                    className={`payment_COD ${selectedPayment === "COD" ? "selected" : ""
+                                        }`}
+                                    onClick={() => handlePaymentClick("COD")}
+                                >
+                                    <span className="payment_method">
+                                        <input
+                                            type="radio"
+                                            name="payment_method"
+                                            checked={selectedPayment === "COD"}
+                                            onChange={() =>
+                                                handlePaymentClick("COD")
+                                            }
+                                            required
+                                        />
+                                        <span className="checkmark"></span>
+                                    </span>
 
-                                <span className="payment_method icon">
-                                    <img
-                                        src="https://mcdn.coolmate.me/image/October2024/mceclip2_42.png"
-                                        alt=""
-                                    />
-                                </span>
+                                    <span className="payment_method icon">
+                                        <img
+                                            src="https://mcdn.coolmate.me/image/October2024/mceclip2_42.png"
+                                            alt=""
+                                        />
+                                    </span>
 
-                                <span className="payment_method name">
-                                    <strong>Thanh toán khi nhận hàng</strong>
-                                </span>
+                                    <span className="payment_method name">
+                                        <strong>Thanh toán khi nhận hàng</strong>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
+                </form>
+
                 <div className="cart_container">
                     <div className="title">Giỏ hàng</div>
-                    <div className="cart_group">
-                        <div className="cart_img">
-                            <img
-                                src="https://media3.coolmate.me/cdn-cgi/image/width=320,height=362,quality=80/uploads/November2024/24CMCW.DT002__8875_NAVY_14.jpg"
-                                alt=""
-                            />
-                        </div>
-                        <div className="cart_product">
-                            <p className="product_name">
-                                Áo giữ nhiệt Essential Brush Poly cổ trung
-                            </p>
-                            <p className="product_size">Size: L</p>
-
-                            <div className="cart_desc">
-                                <div className="quantity_box">
-                                    <button
-                                        type="button"
-                                        className="decrease"
-                                        onClick={handleDecreaseQuantity}
-                                    >
-                                        -
-                                    </button>
-                                    <input
-                                        type="text"
-                                        value={quantity}
-                                        onChange={(e) =>
-                                            setQuantity(e.target.value)
-                                        }
-                                    />
-                                    <button
-                                        className="increase"
-                                        onclick={handleIncreaseQuantity}
-                                    >
-                                        +
-                                    </button>
-                                </div>
-                                <div className="price">
-                                    <span>149.000đ</span>
-                                </div>
+                    {products.map(product => (
+                        <div className="cart_group">
+                            <div className="cart_img">
+                                <img
+                                    src={product.imageUrl}
+                                    alt=""
+                                />
                             </div>
+                            <div className="cart_product">
+                                <p className="product_name">
+                                    {product.name}
+                                </p>
+                                <p className="product_size">Size: {product.size}</p>
 
-                            <button className="remove_item">
-                                <span>Xóa</span>
-                            </button>
+                                <div className="cart_desc">
+                                    <div className="quantity_box">
+                                        <button
+                                            type="button"
+                                            className="decrease"
+                                            onClick={handleDecreaseQuantity}
+                                        >
+                                            -
+                                        </button>
+                                        <input
+                                            type="text"
+                                            value={product.quantity}
+                                            onChange={(e) =>
+                                                setQuantity(e.target.value)
+                                            }
+                                        />
+                                        <button
+                                            className="increase"
+                                            onclick={handleIncreaseQuantity}
+                                        >
+                                            +
+                                        </button>
+                                    </div>
+                                    <div className="price">
+                                        <span>{product.price}</span>
+                                    </div>
+                                </div>
+
+                                <form action="" onSubmit={handleSubmitDel}>
+                                    <input type="hidden" name="product_id" value={product.id_product} />
+                                    <input type="hidden" name="size" value={product.size} />
+                                    <button className="remove_item">
+                                        <span>Xóa</span>
+                                    </button>
+                                </form>
+                            </div>
                         </div>
-                    </div>
+                    ))}
                     <div className="pricing_in4">
-                        <div className="pricing_in4_item">
-                            <p>Tạm tính</p>
-                            <span>0đ</span>
-                        </div>
-
-                        <div className="pricing_in4_item">
-                            <p>Phí giao hàng</p>
-                            <span>Miễn phí</span>
-                        </div>
                         <div className="line"></div>
                         <div className="pricing_in4_item">
                             <p>Tổng</p>
-                            <span style={{ fontWeight: "bold" }}>0đ</span>
+                            <span style={{ fontWeight: "bold" }}>{totalPrice}</span>
                         </div>
                         {isAuthenticated ? (
-                            <div className="checkout_btn_box">
-                                <button className="checkout_btn">
-                                    ĐẶT HÀNG
-                                </button>
-                            </div>
+                            <form onSubmit={handleSubmit}>
+                                <div className="checkout_btn_box">
+                                    <button type="submit" onClick={handleSubmit} className="checkout_btn">
+                                        ĐẶT HÀNG
+                                    </button>
+                                </div>
+                            </form>
                         ) : (
                             <div className="login_prompt">
                                 <p>Vui lòng đăng nhập để thanh toán giỏ hàng</p>
@@ -220,7 +333,7 @@ const Cart = () => {
                         )}
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 };

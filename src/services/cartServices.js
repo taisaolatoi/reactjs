@@ -17,4 +17,16 @@ let addCart = async (name, price, imageUrl, quantity, size, id_product) => {
         throw new Error('Lỗi khi thêm vào giỏ hàng'); // Throw error để controller xử lý
     }
 };
-export default { addCart }
+
+let getCart = async () => {
+    const response = await axios.get('http://localhost:8080/api/get-cart')
+    return response.data.data;
+}
+
+let deleteCart = async (id_product, size) => {
+    const response = await axios.delete('http://localhost:8080/api/remove-cart', {
+        data: { id_product, size } // Gửi dữ liệu ở đây
+    });
+    return response.data;
+}
+export default { addCart, getCart, deleteCart }
