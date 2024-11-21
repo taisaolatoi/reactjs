@@ -199,15 +199,11 @@ const ProductDetail = () => {
                                 <input type="hidden" name="size" value={selectedSize} />
                                 <input type="hidden" name="id_product" value={id} />
 
-                                {isAuthenticated ? (
-                                    <div className="product-single_button">
-                                        <button className="btn" href="">Thêm vào giỏ hàng</button>
-                                    </div>
-                                ) : (
-                                    <div className="login_prompt">
-                                        <p>Vui lòng đăng nhập để thanh toán giỏ hàng</p>
-                                    </div>
-                                )}
+
+                                <div className="product-single_button">
+                                    <button className="btn" href="">Thêm vào giỏ hàng</button>
+                                </div>
+
                             </form>
                         </div>
                     </div>

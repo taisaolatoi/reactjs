@@ -11,7 +11,7 @@ const ProductList = () => {
         const fetchgetProduct = async () => {
             try {
                 let data = await productServices.getProductFromType(id);
-                setProduct([data]); // Chuyển đổi data thành một mảng
+                setProduct(data);
             } catch (error) {
                 console.log("Lỗi khi lấy sản phẩm", error)
             }
