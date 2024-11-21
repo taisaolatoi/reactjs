@@ -52,7 +52,6 @@ const UpdateFormPass = ({ onClose }) => {
 
             if (response.data.errCode === 0) {
                 console.log("Cập nhật mật khẩu thành công");
-                onClose();
                 toast.success("Cập nhật mật khẩu thành công!"); // Show success toast
             } else {
                 console.error(response.data.errMessage);

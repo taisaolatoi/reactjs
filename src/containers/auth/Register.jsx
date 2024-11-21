@@ -31,8 +31,7 @@ const RegisForm = ({ onClose, onToggle }) => {
             formData
         );
         if (response.data.errCode === 0) {
-            toast.success("Đăng ký thành công!");
-            onClose(); // Đóng popup
+            toast.success(response.data.errMessage);
         } else {
             toast.error(response.data.errMessage);
         }

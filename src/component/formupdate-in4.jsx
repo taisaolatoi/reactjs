@@ -26,6 +26,16 @@ const UpdateForm = ({ onClose, userData, setUserData }) => {
     const handleSubmit = (e) => {
         e.preventDefault();
 
+        if (
+            !formData.gender ||
+            !formData.fullname ||
+            !formData.phone ||
+            !formData.address
+        ) {
+            toast.error("Vui lòng nhập đầy đủ thông tin!");
+            return;
+        }
+
         // Kiểm tra xem có phải đã đăng nhập chưa và có userId hay không
         if (isAuthenticated && userId) {
             // Gửi yêu cầu POST với dữ liệu (không cần gửi token trong header)
@@ -41,7 +51,6 @@ const UpdateForm = ({ onClose, userData, setUserData }) => {
                     if (response.data.errCode === 0) {
                         console.log("Cập nhật thành công", response.data.user); // In thông tin người dùng sau khi cập nhật
                         setUserData(response.data); // Cập nhật state với dữ liệu mới
-                        onClose(); // Đóng popup sau khi thành công
                         toast.success("Cập nhật thông tin thành công!");
                     } else {
                         console.error(response.data.errMessage); // Hiển thị thông báo lỗi nếu có
