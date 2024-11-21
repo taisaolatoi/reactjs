@@ -251,7 +251,7 @@ const ProductDetail = () => {
                                 ) : (
                                     <div className="login_prompt">
                                         <p>
-                                            Vui lòng đăng nhập để thanh toán giỏ
+                                            Vui lòng đăng nhập để thêm vào giỏ
                                             hàng
                                         </p>
                                     </div>
