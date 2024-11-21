@@ -3,6 +3,7 @@ import UpdateForm from "./formupdate-in4";
 import "./account-in4.scss";
 import UpdateFormPass from "./formupdate-pass";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 const AccountPageIn4 = () => {
     const [showUpdateForm, setShowUpdateForm] = useState(false);
@@ -80,6 +81,7 @@ const AccountPageIn4 = () => {
                 });
                 setSelectedImage(null);
                 setShowImagePreview(false);
+                toast.success("Cập nhật ảnh đại diện thành công");
             } else {
                 console.error(
                     "Lỗi khi upload ảnh lên Cloudinary:",
@@ -111,7 +113,7 @@ const AccountPageIn4 = () => {
                             <div className="account_in4_label">
                                 Ảnh đại diện
                             </div>
-                            <div className="account_in4_value">
+                            <div className="account_in4_value d-flex align-items-center">
                                 <label
                                     htmlFor="avatar-input"
                                     className="avatar-container"
@@ -137,18 +139,23 @@ const AccountPageIn4 = () => {
                                     className="upload-input"
                                 />
                                 {showImagePreview && (
-                                    <img
-                                        src={URL.createObjectURL(selectedImage)}
-                                        alt="Preview"
-                                        className="image-preview"
-                                    />
+                                    <>
+                                        <img
+                                            src={URL.createObjectURL(
+                                                selectedImage
+                                            )}
+                                            alt="Preview"
+                                            className="image-preview"
+                                        />
+
+                                        <button
+                                            className="account_in4_btn ms-3"
+                                            onClick={handleUploadImage}
+                                        >
+                                            Tải lên
+                                        </button>
+                                    </>
                                 )}
-                                <button
-                                    className="account_in4_btn"
-                                    onClick={handleUploadImage}
-                                >
-                                    Tải lên
-                                </button>
                             </div>
                         </div>
                         <div className="account_in4_field">
