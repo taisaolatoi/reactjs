@@ -4,7 +4,6 @@ import { AuthContext } from "../contexts/AuthContext";
 import { toast } from "react-toastify";
 const UpdateForm = ({ onClose, userData, setUserData }) => {
     const { userId, isAuthenticated } = useContext(AuthContext); // Lấy userId và isAuthenticated từ context
-    console.log("check userId:", userId); // Kiểm tra userId
 
     // Set formData ban đầu từ userData khi mở form
     const [formData, setFormData] = useState({

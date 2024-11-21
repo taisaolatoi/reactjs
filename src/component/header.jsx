@@ -6,7 +6,6 @@ import cart_icon from "../img/cart.svg";
 import Sub_menu from "./sub_menu";
 import LoginForm from "../containers/auth/Login";
 import RegisForm from "../containers/auth/Register";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import productServices from "../services/productServices";
 import "./Header.scss";
 import { NavLink } from "react-router-dom";
@@ -81,17 +80,11 @@ const Header = () => {
                             <img src={user_icon} alt="User" />
                             <div className="user_dropdown">
                                 <p>Xin chào, {user}</p>
-                                {role === "user" && (
-                                    <>
-                                        {/* Dùng NavLink thay vì a */}
-                                        <NavLink to="/account">
-                                            Trang cá nhân
-                                        </NavLink>
-                                        <NavLink onClick={logout} to="#">
-                                            Đăng xuất
-                                        </NavLink>
-                                    </>
-                                )}
+                                {/* Dùng NavLink thay vì a */}
+                                <NavLink to="/account">Trang cá nhân</NavLink>
+                                <NavLink onClick={logout} to="#">
+                                    Đăng xuất
+                                </NavLink>
                             </div>
                         </div>
                     ) : (

@@ -9,6 +9,8 @@ const AuthProvider = ({ children }) => {
     const [role, setRole] = useState(null);
     const [userId, setUserId] = useState(null);
 
+    console.log("check authcontext:", isAuthenticated, user, role, userId);
+
     useEffect(() => {
         const token = localStorage.getItem("token");
         if (token) {
