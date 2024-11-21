@@ -7,6 +7,8 @@ import axios from "axios";
 const AccountPageIn4 = () => {
     const [showUpdateForm, setShowUpdateForm] = useState(false);
     const [userData, setUserData] = useState(null); // Lưu trữ dữ liệu người dùng
+    const [selectedImage, setSelectedImage] = useState(null); // Lưu trữ ảnh được chọn
+    const [showImagePreview, setShowImagePreview] = useState(false); // Hiển thị preview ảnh
 
     // Kiểm tra trạng thái xác thực và lấy thông tin người dùng
     useEffect(() => {
@@ -38,6 +40,57 @@ const AccountPageIn4 = () => {
         }
     };
 
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        setSelectedImage(file);
+        setShowImagePreview(true);
+    };
+
+    const handleUploadImage = async () => {
+        if (!selectedImage) {
+            return;
+        }
+        const formData = new FormData();
+        formData.append("avatar", selectedImage);
+        formData.append("id", userData.user.id); // Gửi ID người dùng
+        formData.append("currentImageUrl", userData.user.imageUrl); // Gửi URL ảnh hiện tại
+
+        try {
+            const response = await axios.post(
+                "http://localhost:8080/update-avatar",
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                        Authorization: `Bearer ${localStorage.getItem(
+                            "token"
+                        )}`,
+                    },
+                }
+            );
+
+            if (response.status === 200) {
+                // Cập nhật lại dữ liệu người dùng sau khi upload ảnh thành công
+                setUserData({
+                    ...userData,
+                    user: {
+                        ...userData.user,
+                        imageUrl: response.data.newAvatarUrl,
+                    },
+                });
+                setSelectedImage(null);
+                setShowImagePreview(false);
+            } else {
+                console.error(
+                    "Lỗi khi upload ảnh lên Cloudinary:",
+                    response.data
+                );
+            }
+        } catch (error) {
+            console.error("Lỗi khi upload ảnh:", error);
+        }
+    };
+
     const [showUpdateFormPass, setShowUpdateFormPass] = useState(false);
 
     const handleShowUpdateFormPass = () => {
@@ -54,6 +107,50 @@ const AccountPageIn4 = () => {
             <div className="account_in4_form">
                 {userData && (
                     <>
+                        <div className="account_in4_field">
+                            <div className="account_in4_label">
+                                Ảnh đại diện
+                            </div>
+                            <div className="account_in4_value">
+                                <label
+                                    htmlFor="avatar-input"
+                                    className="avatar-container"
+                                >
+                                    {userData.user.imageUrl && (
+                                        <img
+                                            src={userData.user.imageUrl}
+                                            alt="Ảnh đại diện"
+                                            className="user-avatar"
+                                        />
+                                    )}
+                                    {!userData.user.imageUrl && (
+                                        <span className="placeholder">
+                                            Chọn ảnh
+                                        </span>
+                                    )}
+                                </label>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleImageChange}
+                                    id="avatar-input"
+                                    className="upload-input"
+                                />
+                                {showImagePreview && (
+                                    <img
+                                        src={URL.createObjectURL(selectedImage)}
+                                        alt="Preview"
+                                        className="image-preview"
+                                    />
+                                )}
+                                <button
+                                    className="account_in4_btn"
+                                    onClick={handleUploadImage}
+                                >
+                                    Tải lên
+                                </button>
+                            </div>
+                        </div>
                         <div className="account_in4_field">
                             <div className="account_in4_label">Họ và Tên</div>
                             <div className="account_in4_value">
