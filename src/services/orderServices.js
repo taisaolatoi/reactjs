@@ -12,4 +12,11 @@ let addOrder = async (address, phone, status, products, id_user, paymentMethod, 
         console.log('Lỗi khi thêm vào đơn hàng', error)
     }
 }
-export default { addOrder }
+
+let getOrder = async (id_user) => {
+    const response = await axios.post('http://localhost:8080/api/get-order', 
+        {id_user}
+    )
+    return response.data;
+}
+export default { addOrder, getOrder }

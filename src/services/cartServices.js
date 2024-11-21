@@ -29,4 +29,13 @@ let deleteCart = async (id_product, size) => {
     });
     return response.data;
 }
-export default { addCart, getCart, deleteCart }
+
+let updateCart = async (id_product, size, quantity) => {
+    const response = await axios.put('http://localhost:8080/api/update-cart',
+        {
+            id_product, size, quantity
+        }
+    )
+    return response.data;
+}
+export default { addCart, getCart, deleteCart, updateCart }

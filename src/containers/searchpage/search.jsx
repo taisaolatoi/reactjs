@@ -1,5 +1,6 @@
 import React from 'react';
 import '../productpage/productpage.scss'
+
 const Search = () => {
     const products = [
         {
@@ -54,28 +55,34 @@ const Search = () => {
         },
     ];
 
+    const filteredProducts = products.filter(product => {
+        // Logic lọc sản phẩm dựa trên từ khóa tìm kiếm
+        // Ví dụ: Lọc sản phẩm có tên chứa "áo thun"
+        return product.name.toLowerCase().includes('áo thun');
+    });
+
     return (
         <>
             <div className="title_page">
-                <ul className="title_page_list">
-                    <li className='title_page_fitem'>Trang chủ</li>
-                    <li className='title_page_litem'>Áo Thun</li>
-                </ul>
+                {/* ... (Tiêu đề trang) */}
             </div>
-            <h1>Áo Thun Nam</h1>
+            <h1>Tìm kiếm</h1>
             <div className="product-container">
-                {products.map((product, index) => (
-                    <div className="product-item" key={index}>
-                        <img className='product_img' src={product.image} alt={product.name} />
-                        <div className="product_name">
-                            <a href="/product_detail">{product.name}</a>
+                {filteredProducts.length > 0 ? (
+                    filteredProducts.map((product, index) => (
+                        <div className="product-item" key={index}>
+                            <img className='product_img' src={product.image} alt={product.name} />
+                            <div className="product_name">
+                                <a href="/product_detail">{product.name}</a>
+                            </div>
+                            <p className='product_price'>Giá: {product.price}</p>
                         </div>
-                        <p className='product_price'>Giá: {product.price}</p>
-                    </div>
-                ))}
+                    ))
+                ) : (
+                    <p className="no-results">Không có từ khóa hợp lệ</p>
+                )}
             </div>
         </>
-
     );
 };
 

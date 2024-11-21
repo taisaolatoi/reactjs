@@ -6,6 +6,7 @@ import ProductDetail from "../containers/productdetail/productdetail";
 import LayOutAccount from "../containers/accountpage/Layoutaccount";
 import AccountPageIn4 from "../component/account-in4";
 import AccountPageOrder from "../component/account-order";
+import AccountDetailPage from "../component/account-detail-order.jsx"
 import Cart from "../containers/cart/cart";
 import Province from "../containers/province/province.jsx";
 import Search from "../containers/searchpage/search.jsx";
@@ -51,6 +52,10 @@ export const router = createBrowserRouter([
                         path: "/account/order",
                         element: <AccountPageOrder />,
                     },
+                    {
+                        path: "/account/detail-order",
+                        element: <AccountDetailPage />
+                    }
                 ],
             },
         ],

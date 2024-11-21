@@ -44,7 +44,7 @@ const Header = () => {
         }
         fetchTypeProduct();
     }, []);
-
+    console.log(type)
     return (
         <div className="header">
             <div className="logo_header">

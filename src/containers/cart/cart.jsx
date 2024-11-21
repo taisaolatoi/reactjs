@@ -47,7 +47,8 @@ const Cart = () => {
         products.forEach((product) => {
             total += product.price * product.quantity; // Tính tổng tiền cho mỗi sản phẩm
         });
-        setTotalPrice(total);
+        const formattedtotal = parseInt(total);
+        setTotalPrice(formattedtotal);
     }, [products]);
 
 
@@ -74,14 +75,27 @@ const Cart = () => {
         setSelectedPayment(payment); // Cập nhật state khi click vào payment
     };
 
-    const handleIncreaseQuantity = () => {
-        setQuantity(quantity + 1);
+    const handleDecreaseQuantity = (productId, size) => {
+        setProduct(prevProducts => prevProducts.map(product => {
+            if (product.id_product === productId && product.size === size) {
+                const newQuantity = product.quantity > 1 ? product.quantity - 1 : 1;
+                handleQuantityChange(productId, size, newQuantity);
+                return { ...product, quantity: newQuantity };
+            }
+            return product;
+        }));
     };
 
-    const handleDecreaseQuantity = () => {
-        if (quantity > 1) {
-            setQuantity(quantity - 1);
-        }
+    const handleIncreaseQuantity = (productId, size) => {
+        setProduct(prevProducts => prevProducts.map(product => {
+            if (product.id_product === productId && product.size === size) {
+                const newQuantity = product.quantity + 1;
+                // Gọi handleQuantityChange với giá trị newQuantity mới
+                handleQuantityChange(productId, size, newQuantity);
+                return { ...product, quantity: newQuantity };
+            }
+            return product;
+        }));
     };
 
     useEffect(() => {
@@ -133,10 +147,33 @@ const Cart = () => {
         }
     };
 
+    const handleQuantityChange = async (productId, size, newQuantity) => {
+        try {
+
+            const response = await cartServices.updateCart({
+                id_product: productId,
+                size: size,
+                quantity: newQuantity
+            });
+
+            // Cập nhật lại state của sản phẩm trong mảng products
+            setProduct(prevProducts => prevProducts.map(product => {
+                if (product.id_product === productId && product.size === size) {
+                    return { ...product, quantity: newQuantity };
+                }
+                return product;
+            }));
+
+            console.log(response);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
 
     const handleSubmit = async (event) => {
         event.preventDefault(); // Ngăn chặn form submit theo mặc định
-        if (!address || !province || !district || !ward || !selectedPayment) {
+        if (!address || !province || !district || !ward || !selectedPayment || !products) {
             alert("Vui lòng điền đầy đủ thông tin!");
             return;
         }
@@ -260,63 +297,61 @@ const Cart = () => {
 
                 <div className="cart_container">
                     <div className="title">Giỏ hàng</div>
-                    {products.map(product => (
-                        <div className="cart_group">
-                            <div className="cart_img">
-                                <img
-                                    src={product.imageUrl}
-                                    alt=""
-                                />
-                            </div>
-                            <div className="cart_product">
-                                <p className="product_name">
-                                    {product.name}
-                                </p>
-                                <p className="product_size">Size: {product.size}</p>
+                    {products && products.map(product => {
+                        const formattedPrice = parseFloat(product.price); // Declare outside the map function
 
-                                <div className="cart_desc">
-                                    <div className="quantity_box">
-                                        <button
-                                            type="button"
-                                            className="decrease"
-                                            onClick={handleDecreaseQuantity}
-                                        >
-                                            -
-                                        </button>
-                                        <input
-                                            type="text"
-                                            value={product.quantity}
-                                            onChange={(e) =>
-                                                setQuantity(e.target.value)
-                                            }
-                                        />
-                                        <button
-                                            className="increase"
-                                            onclick={handleIncreaseQuantity}
-                                        >
-                                            +
-                                        </button>
-                                    </div>
-                                    <div className="price">
-                                        <span>{product.price}</span>
-                                    </div>
+                        return ( // Add a return statement
+                            <div className="cart_group">
+                                <div className="cart_img">
+                                    <img src={product.imageUrl} alt="" />
                                 </div>
+                                <div className="cart_product">
+                                    <p className="product_name">{product.name}</p>
+                                    <p className="product_size">Size: {product.size}</p>
 
-                                <form action="" onSubmit={handleSubmitDel}>
-                                    <input type="hidden" name="product_id" value={product.id_product} />
-                                    <input type="hidden" name="size" value={product.size} />
-                                    <button className="remove_item">
-                                        <span>Xóa</span>
-                                    </button>
-                                </form>
+                                    <div className="cart_desc">
+                                        <div className="quantity_box">
+                                            <button
+                                                type="button"
+                                                className="decrease"
+                                                onClick={() => handleDecreaseQuantity(product.id_product, product.size)}
+                                            >
+                                                -
+                                            </button>
+                                            <input
+                                                type="number"
+                                                min="1"
+                                                value={product.quantity}
+                                                onChange={(e) => handleQuantityChange(product.id_product, product.size, parseInt(e.target.value, 10))}
+                                            />
+                                            <button
+                                                className="increase"
+                                                onClick={() => handleIncreaseQuantity(product.id_product, product.size)}
+                                            >
+                                                +
+                                            </button>
+                                        </div>
+                                        <div className="price">
+                                            <span>{formattedPrice.toLocaleString()}đ</span> {/* Use the formattedPrice variable */}
+                                        </div>
+                                    </div>
+
+                                    <form action="" onSubmit={handleSubmitDel}>
+                                        <input type="hidden" name="product_id" value={product.id_product} />
+                                        <input type="hidden" name="size" value={product.size} />
+                                        <button className="remove_item">
+                                            <span>Xóa</span>
+                                        </button>
+                                    </form>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                     <div className="pricing_in4">
                         <div className="line"></div>
                         <div className="pricing_in4_item">
                             <p>Tổng</p>
-                            <span style={{ fontWeight: "bold" }}>{totalPrice}</span>
+                            <span style={{ fontWeight: "bold" }}>{totalPrice.toLocaleString()}đ</span>
                         </div>
                         {isAuthenticated ? (
                             <form onSubmit={handleSubmit}>
@@ -337,4 +372,5 @@ const Cart = () => {
         </>
     );
 };
+
 export default Cart;

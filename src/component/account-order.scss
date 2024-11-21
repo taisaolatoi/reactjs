@@ -1,0 +1,34 @@
+.account-order-container {
+    table {
+        border-collapse: collapse;
+        width: 100%;
+        max-width: 800px;
+        /* Giới hạn chiều rộng tối đa của bảng */
+        margin: 20px auto;
+        /* Căn giữa bảng */
+    }
+
+    th,
+    td {
+        text-align: left;
+        padding: 12px;
+        border: 1px solid #ddd;
+        /* Thêm viền cho ô */
+    }
+
+    th {
+        background-color: #f0f0f0;
+        /* Màu nền cho tiêu đề cột */
+        font-weight: bold;
+    }
+
+    tr:nth-child(even) {
+        background-color: #f2f2f2;
+        /* Màu nền xen kẽ cho hàng */
+    }
+
+    /* Tạo hiệu ứng hover cho hàng */
+    tr:hover {
+        background-color: #e0e0e0;
+    }
+}

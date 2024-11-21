@@ -29,15 +29,29 @@ const ProductList = () => {
             </div>
             {/* <h1>{products.TypeProduct.name}</h1> */}
             <div className="product-container">
-                {products.length > 0 && products.map((product, index) => ( // Kiểm tra products có rỗng hay không
-                    <div className="product-item" key={index}>
-                        <img className='product_img' src={product.imageUrl} alt={product.name} />
-                        <div className="product_name">
-                            <a href={`/product-detail/${product.id}`}>{product.name}</a>
-                        </div>
-                        <p className='product_price'>Giá: {product.price}</p>
-                    </div>
-                ))}
+                {products.length > 0 ? (
+                    products.map((product, index) => {
+                        const formattedPrice = parseFloat(product.price); // Declare outside the map function
+
+                        return ( // Add a return statement
+                            <div className="product-item" key={index}>
+                                <img
+                                    className="product_img"
+                                    src={product && product.imageUrl}
+                                    alt={product && product.name}
+                                />
+                                <div className="product_name">
+                                    <a href={`/product-detail/${product && product.id}`}>
+                                        {product && product.name}
+                                    </a>
+                                </div>
+                                <p className="product_price">Giá: {formattedPrice.toLocaleString()}đ</p>
+                            </div>
+                        );
+                    })
+                ) : (
+                    <p>Không có dữ liệu</p>
+                )}
             </div>
         </>
 
