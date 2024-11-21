@@ -11,7 +11,10 @@ const LayOutAccount = () => {
                 <div className="account_page_sidebar">
                     <div className="account_sidebar">
                         <div className="account_sidebar_items">
-                            <a href="/account" className="account_sidebar_item">
+                            <NavLink
+                                to="/account"
+                                className="account_sidebar_item"
+                            >
                                 <span className="circle">
                                     <img
                                         src="https://mcdn.coolmate.me/image/September2023/mceclip6_34.png"
@@ -19,7 +22,7 @@ const LayOutAccount = () => {
                                     />
                                 </span>
                                 <p>Thông tin tài khoản</p>
-                            </a>
+                            </NavLink>
                             <a
                                 href="/account/order"
                                 className="account_sidebar_item"
@@ -33,7 +36,7 @@ const LayOutAccount = () => {
                                 <p>Lịch sử đơn hàng</p>
                             </a>
                             <NavLink
-                                to="#"
+                                to="/"
                                 onClick={logout}
                                 className="account_sidebar_item"
                             >

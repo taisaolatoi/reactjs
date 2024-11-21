@@ -1,12 +1,15 @@
 import React, { createContext, useState, useEffect } from "react";
-import { jwtDecode } from "jwt-decode"; // Import jwtDecode
+import { jwtDecode } from "jwt-decode";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState(false);
     const [user, setUser] = useState(null);
-    const [role, setRole] = useState(null); // Thêm state cho role
+    const [role, setRole] = useState(null);
+    const [userId, setUserId] = useState(null);
+
+    console.log("check authcontext:", isAuthenticated, user, role, userId);
 
     useEffect(() => {
         const token = localStorage.getItem("token");
@@ -14,7 +17,8 @@ const AuthProvider = ({ children }) => {
             try {
                 const decoded = jwtDecode(token);
                 setUser(decoded.username);
-                setRole(decoded.role); // Cập nhật role từ token
+                setRole(decoded.role);
+                setUserId(decoded.userId);
                 setIsAuthenticated(true);
             } catch (error) {
                 console.error("Token không hợp lệ hoặc hết hạn", error);
@@ -24,11 +28,27 @@ const AuthProvider = ({ children }) => {
         }
     }, []);
 
+    const login = (token) => {
+        localStorage.setItem("token", token);
+        try {
+            const decoded = jwtDecode(token);
+            setUser(decoded.username);
+            setRole(decoded.role);
+            setUserId(decoded.userId);
+            setIsAuthenticated(true);
+        } catch (error) {
+            console.error("Token không hợp lệ hoặc hết hạn", error);
+            localStorage.removeItem("token");
+            setIsAuthenticated(false);
+        }
+    };
+
     const logout = () => {
         localStorage.removeItem("token");
         setIsAuthenticated(false);
         setUser(null);
-        setRole(null); // Reset role
+        setRole(null);
+        setUserId(null);
     };
 
     return (
@@ -37,10 +57,13 @@ const AuthProvider = ({ children }) => {
                 isAuthenticated,
                 user,
                 role,
+                userId,
                 logout,
+                login, // Add the login function to the context
                 setIsAuthenticated,
                 setUser,
                 setRole,
+                setUserId,
             }}
         >
             {children}

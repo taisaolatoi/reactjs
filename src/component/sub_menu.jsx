@@ -1,5 +1,5 @@
 import React from "react";
-import './Header.scss'
+import "./Header.scss";
 const Sub_menu = (props) => {
     const { type } = props;
     return (

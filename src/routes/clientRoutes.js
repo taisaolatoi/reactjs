@@ -22,11 +22,11 @@ export const router = createBrowserRouter([
             },
             {
                 path: "/product/:id",
-                element: <ProductList />
+                element: <ProductList />,
             },
             {
                 path: "/product-detail/:id",
-                element: <ProductDetail />
+                element: <ProductDetail />,
             },
             {
                 path: "/cart",

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import "./Auth.scss";
+import { toast } from "react-toastify";
 
 const RegisForm = ({ onClose, onToggle }) => {
     // State để lưu giá trị các trường trong form
@@ -25,7 +26,16 @@ const RegisForm = ({ onClose, onToggle }) => {
         e.preventDefault(); // Ngừng hành động mặc định của form (không reload trang)
 
         // Gửi yêu cầu POST đến API đăng ký sử dụng axios
-        await axios.post("http://localhost:8080/api/registerPost", formData);
+        let response = await axios.post(
+            "http://localhost:8080/api/registerPost",
+            formData
+        );
+        if (response.data.errCode === 0) {
+            toast.success("Đăng ký thành công!");
+            onClose(); // Đóng popup
+        } else {
+            toast.error(response.data.errMessage);
+        }
     };
 
     return (
